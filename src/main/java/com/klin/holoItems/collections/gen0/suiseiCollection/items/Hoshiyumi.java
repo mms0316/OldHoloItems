@@ -27,9 +27,9 @@ import java.util.Set;
 public class Hoshiyumi extends Item implements Interactable, Launchable, Hitable {
     public static final String name = "hoshiyumi";
     public static final Set<Enchantment> accepted = Set.of(
-            Enchantment.ARROW_DAMAGE,
-            Enchantment.ARROW_FIRE,
-            Enchantment.ARROW_KNOCKBACK,
+            Enchantment.POWER,
+            Enchantment.FLAME,
+            Enchantment.PUNCH,
             Enchantment.FIRE_ASPECT,
             Enchantment.MENDING,
             Enchantment.KNOCKBACK

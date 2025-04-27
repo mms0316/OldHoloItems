@@ -29,13 +29,13 @@ public class Comet extends Item implements Interactable {
     public static final String name = "comet";
     public static final Set<Enchantment> accepted = Set.of(
         Enchantment.FIRE_ASPECT,
-        Enchantment.DAMAGE_ALL,
-        Enchantment.DAMAGE_ARTHROPODS,
-        Enchantment.DAMAGE_UNDEAD,
-        Enchantment.DIG_SPEED,
-        Enchantment.DURABILITY,
-        Enchantment.LOOT_BONUS_BLOCKS,
-        Enchantment.LOOT_BONUS_MOBS,
+        Enchantment.SHARPNESS,
+        Enchantment.BANE_OF_ARTHROPODS,
+        Enchantment.SMITE,
+        Enchantment.EFFICIENCY,
+        Enchantment.UNBREAKING,
+        Enchantment.FORTUNE,
+        Enchantment.LOOTING,
         Enchantment.MENDING,
         Enchantment.PIERCING,
         Enchantment.SILK_TOUCH
@@ -87,7 +87,7 @@ public class Comet extends Item implements Interactable {
         // if(Utility.onCooldown(item))
         //     return;
         // Utility.cooldown(item, 20);
-        // double damage = 4 + 3 * (Utility.checkPotionEffect(player, PotionEffectType.INCREASE_DAMAGE) -
+        // double damage = 4 + 3 * (Utility.checkPotionEffect(player, PotionEffectType.STRENGTH) -
         //         Utility.checkPotionEffect(player, PotionEffectType.WEAKNESS));
 
         // Location location = player.getEyeLocation();
@@ -157,9 +157,9 @@ public class Comet extends Item implements Interactable {
         //                     Utility.addDurability(item, 0.5, player);
         //                 ItemStack clone = item.clone();
         //                 if(bread) {
-        //                     clone.addUnsafeEnchantment(Enchantment.DAMAGE_UNDEAD, 5);
-        //                     clone.addUnsafeEnchantment(Enchantment.DAMAGE_ARTHROPODS, 5);
-        //                     clone.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 5);
+        //                     clone.addUnsafeEnchantment(Enchantment.SMITE, 5);
+        //                     clone.addUnsafeEnchantment(Enchantment.BANE_OF_ARTHROPODS, 5);
+        //                     clone.addUnsafeEnchantment(Enchantment.SHARPNESS, 5);
         //                 }
         //                 for (LivingEntity target : targets) {
         //                     if (target.isValid() && (!(target instanceof Player) || !((Player) target).isBlocking()))

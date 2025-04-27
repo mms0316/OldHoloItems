@@ -63,8 +63,8 @@ public class Starch extends Item implements Brewable, Consumable {
                     if(item.getType()==Material.LINGERING_POTION)
                         multiplier = 4;
                     if(type==PotionType.MUNDANE)
-                        meta.addCustomEffect(new PotionEffect(PotionEffectType.CONFUSION, 400/multiplier, 1), true);
-                    else if(type==PotionType.SPEED)
+                        meta.addCustomEffect(new PotionEffect(PotionEffectType.NAUSEA, 400/multiplier, 1), true);
+                    else if(type==PotionType.SWIFTNESS)
                         meta.addCustomEffect(new PotionEffect(PotionEffectType.BLINDNESS, 800/multiplier, 1), true);
                     else
                         continue;

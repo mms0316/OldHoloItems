@@ -80,7 +80,7 @@ public class Watson extends Member {
             return;
         for(LivingEntity target : targets){
             if(!airborne.contains(target)){
-                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 6, 6));
+                target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 6, 6));
                 new Task(HoloItems.getInstance(), 6, 1){
                     int increment = 0;
                     boolean flip = true;

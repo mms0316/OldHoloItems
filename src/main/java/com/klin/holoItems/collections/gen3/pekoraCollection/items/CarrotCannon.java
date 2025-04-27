@@ -20,7 +20,7 @@ import java.util.Set;
 public class CarrotCannon extends BatteryPack {
     public static final String name = "carrotCannon";
     public static final Set<Enchantment> accepted = new HashSet<>(){{
-        add(Enchantment.DURABILITY);
+        add(Enchantment.UNBREAKING);
         add(Enchantment.MENDING);
     }};
     private static final ItemStack carrot = new ItemStack(Material.CARROT);

@@ -45,9 +45,9 @@ public class SanaCollection extends Collection {
         if(enchant!=null && enchant.contains(SpaceBreadSplash.name))
             return;
         Inventory inv = player.getInventory();
-        AtomicBoolean sharp = new AtomicBoolean(itemStack.getEnchantmentLevel(Enchantment.DAMAGE_ALL)>=5);
-        AtomicBoolean smite = new AtomicBoolean(itemStack.getEnchantmentLevel(Enchantment.DAMAGE_UNDEAD)>=5);
-        AtomicBoolean bane = new AtomicBoolean(itemStack.getEnchantmentLevel(Enchantment.DAMAGE_ARTHROPODS)>=5);
+        AtomicBoolean sharp = new AtomicBoolean(itemStack.getEnchantmentLevel(Enchantment.SHARPNESS)>=5);
+        AtomicBoolean smite = new AtomicBoolean(itemStack.getEnchantmentLevel(Enchantment.SMITE)>=5);
+        AtomicBoolean bane = new AtomicBoolean(itemStack.getEnchantmentLevel(Enchantment.BANE_OF_ARTHROPODS)>=5);
         Set<ItemStack> books = new HashSet<>();
         for(ItemStack item : inv.getStorageContents()){
             if(item==null)
@@ -61,19 +61,19 @@ public class SanaCollection extends Collection {
                     if(storedEnchantments.get(enchantment)<5) {
                         cont = true;
                         break;
-                    } if(enchantment.equals(Enchantment.DAMAGE_ALL)) {
+                    } if(enchantment.equals(Enchantment.SHARPNESS)) {
                         if(sharp.get()) {
                             cont = true;
                             break;
                         }
                         found.add(sharp);
-                    } else if(enchantment.equals(Enchantment.DAMAGE_UNDEAD)) {
+                    } else if(enchantment.equals(Enchantment.SMITE)) {
                         if(smite.get()){
                             cont = true;
                             break;
                         }
                         found.add(smite);
-                    } else if(enchantment.equals(Enchantment.DAMAGE_ARTHROPODS)) {
+                    } else if(enchantment.equals(Enchantment.BANE_OF_ARTHROPODS)) {
                         if(bane.get()){
                             cont = true;
                             break;
