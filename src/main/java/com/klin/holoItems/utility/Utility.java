@@ -42,6 +42,13 @@ import static org.bukkit.Material.*;
 
 public class Utility {
     public static final NamespacedKey key = new NamespacedKey(HoloItems.getInstance(), "holoItems");
+    
+    //New namespace for recognizing specific items
+    //There is scuff using the already existing 'key' namespace
+    //As an example, usable items (like potions) that have a 'key' and don't inherit from Consumable are cancelled
+    //Gradually, the usage of 'key' namespace will be reviewed, possibly being limited to very specific usages
+    public static final NamespacedKey id = new NamespacedKey(HoloItems.getInstance(), "id");
+
     public static final NamespacedKey stack = new NamespacedKey(HoloItems.getInstance(), "stack");
     public static final NamespacedKey cooldown = new NamespacedKey(HoloItems.getInstance(), "cooldown");
     public static final NamespacedKey enchant = new NamespacedKey(HoloItems.getInstance(), "enchant");
