@@ -207,7 +207,7 @@ public class Utility {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§6"+formatName(name));
         List<String> list = processStr(lore);
-        meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
         if(meta instanceof Damageable) {
             meta.setUnbreakable(true);
             meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
@@ -684,9 +684,9 @@ public class Utility {
             }
         }
         if(radius<3)
-            world.spawnParticle(Particle.EXPLOSION_LARGE, loc, 1);
+            world.spawnParticle(Particle.EXPLOSION, loc, 1);
         else
-            world.spawnParticle(Particle.EXPLOSION_HUGE, loc, 1);
+            world.spawnParticle(Particle.EXPLOSION_EMITTER, loc, 1);
         world.playSound(loc, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, ((float) radius)/10, 1f);
         return blast;
     }

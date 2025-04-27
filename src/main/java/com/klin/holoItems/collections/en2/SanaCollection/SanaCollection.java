@@ -96,9 +96,9 @@ public class SanaCollection extends Collection {
                 Utility.addEnchant(itemStack, (SpaceBreadSplash) (Collections.items.get(SpaceBreadSplash.name)));
                 Location loc = event.getRightClicked().getLocation().add(0, 1.4, 0);
                 World world = player.getWorld();
-                world.spawnParticle(Particle.REDSTONE, loc, 4, 1, 1, 1, new Particle.DustOptions(Color.fromBGR(129, 1, 237), 2));
-                world.spawnParticle(Particle.REDSTONE, loc, 4, 1, 1, 1, new Particle.DustOptions(Color.WHITE, 2));
-                world.spawnParticle(Particle.REDSTONE, loc, 4, 1, 1, 1, new Particle.DustOptions(Color.BLUE, 2));
+                world.spawnParticle(Particle.DUST, loc, 4, 1, 1, 1, new Particle.DustOptions(Color.fromBGR(129, 1, 237), 2));
+                world.spawnParticle(Particle.DUST, loc, 4, 1, 1, 1, new Particle.DustOptions(Color.WHITE, 2));
+                world.spawnParticle(Particle.DUST, loc, 4, 1, 1, 1, new Particle.DustOptions(Color.BLUE, 2));
                 player.sendMessage("§a[§dSana§a]§f: §dLimiter REMOVED!");
                 return;
             }

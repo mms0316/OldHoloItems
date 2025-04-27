@@ -81,7 +81,7 @@ public class Hoshiyumi extends Item implements Interactable, Launchable, Hitable
                 continue;
             entity.setVelocity(entity.getVelocity().setY(1.4));
             entity.setArrowsInBody(Math.max(0, entity.getArrowsInBody()-1));
-            world.spawnParticle(Particle.EXPLOSION_LARGE, entity.getLocation(), 1);
+            world.spawnParticle(Particle.EXPLOSION, entity.getLocation(), 1);
             world.playSound(entity.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.2f, 1f);
             if (player.getGameMode()!=GameMode.CREATIVE)
                 Utility.addDurability(item, -1, player);

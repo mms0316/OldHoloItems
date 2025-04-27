@@ -70,7 +70,7 @@ public class Watson extends Member {
                         cancel();
                         return;
                     }
-                    world.spawnParticle(Particle.REDSTONE, loc.add(dir), 1, new Particle.DustOptions(Color.WHITE, 1));
+                    world.spawnParticle(Particle.DUST, loc.add(dir), 1, new Particle.DustOptions(Color.WHITE, 1));
                     increment += 0.2;
                 }
             }
