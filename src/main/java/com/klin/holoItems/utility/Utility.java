@@ -346,9 +346,9 @@ public class Utility {
                 damage *= 1-Math.min(0.8, projProtection);
         }
         
-        if (item!=null && target.getCategory().equals(EntityCategory.ARTHROPOD))
+        if (item!=null && Tag.ENTITY_TYPES_SENSITIVE_TO_BANE_OF_ARTHROPODS.isTagged(target.getType()))
             damage += 2.5*item.getEnchantmentLevel(Enchantment.BANE_OF_ARTHROPODS);
-        if (item!=null && target.getCategory().equals(EntityCategory.UNDEAD))
+        if (item!=null && Tag.ENTITY_TYPES_SENSITIVE_TO_SMITE.isTagged(target.getType()))
             damage += 2.5*item.getEnchantmentLevel(Enchantment.SMITE);
 
         int fire = item!=null ? item.getEnchantmentLevel(Enchantment.FIRE_ASPECT) : 0;
