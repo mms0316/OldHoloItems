@@ -91,9 +91,7 @@ public class Comet extends Item implements Interactable {
             return;
         Utility.cooldown(item, 20);
 
-        // TODO: Remove check for PotionEffectType.WEAKNESS, since Comet is cancelled if player is affected by Weakness
-        double damage = 4 + 3 * (Utility.checkPotionEffect(player, PotionEffectType.STRENGTH) -
-                Utility.checkPotionEffect(player, PotionEffectType.WEAKNESS));
+        double damage = 4 + 3 * (Utility.checkPotionEffect(player, PotionEffectType.STRENGTH));
 
         Location location = player.getEyeLocation();
         World world = player.getWorld();
@@ -108,8 +106,7 @@ public class Comet extends Item implements Interactable {
             RayTraceResult result = world.rayTrace(location, dir, 50,
                     FluidCollisionMode.NEVER, true, 0.5,
                     entity -> (entity != player &&
-                            entity instanceof LivingEntity && !(entity instanceof ArmorStand) &&
-                            !targets.contains(entity))); // TODO: remove this, since Set<> should be enough
+                            entity instanceof LivingEntity && !(entity instanceof ArmorStand)));
             if (result != null) {
                 LivingEntity entity = (LivingEntity) result.getHitEntity();
                 if (entity != null) {
