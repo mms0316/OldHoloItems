@@ -9,6 +9,7 @@ import com.klin.holoItems.utility.Utility;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -20,7 +21,9 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
+import org.joml.Quaternionf;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -95,15 +98,22 @@ public class Comet extends Item implements Interactable {
 
         Location location = player.getEyeLocation();
         World world = player.getWorld();
-        boolean hand = event.getHand()==EquipmentSlot.HAND;
 
-        double distance = 50;
-        Vector dir = location.getDirection().multiply(3);
+        final double maxDistance = 50;
+        double distance = maxDistance;
+
+        // Normalized vector
+        Vector direction = location.getDirection();
+
+        // Set vector speed as 3 blocks/sec
+        final double speed = 3;
+        Vector dir = direction.multiply(speed);
+
         Set<LivingEntity> targets = new HashSet<>();
 
         // Raytrace to find entities in the way. If piercing is applied, do it multiple times
         for(int i=0; i<1+item.getEnchantmentLevel(Enchantment.PIERCING); i++) {
-            RayTraceResult result = world.rayTrace(location, dir, 50,
+            RayTraceResult result = world.rayTrace(location, dir, maxDistance,
                     FluidCollisionMode.NEVER, true, 0.5,
                     entity -> (entity != player &&
                             entity instanceof LivingEntity && !(entity instanceof ArmorStand)));
@@ -119,30 +129,36 @@ public class Comet extends Item implements Interactable {
                 }
             }
         }
-        double iterations = distance/3;
 
-        //TODO: change usage of ArmorStand to send visual packets instead
-        ArmorStand stand = world.spawn(location.clone().add(0, -1, 0), ArmorStand.class);
-        stand.setInvisible(true);
-        stand.setInvulnerable(true);
-        stand.setGravity(false);
-        stand.setBasePlate(false);
-        stand.setCanPickupItems(false);
-        stand.addEquipmentLock(EquipmentSlot.CHEST, ArmorStand.LockType.ADDING);
-        stand.addEquipmentLock(EquipmentSlot.FEET, ArmorStand.LockType.ADDING);
-        stand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.ADDING);
-        stand.addEquipmentLock(EquipmentSlot.LEGS, ArmorStand.LockType.ADDING);
-        stand.getPersistentDataContainer().set(Utility.key, PersistentDataType.STRING, "hI");
-        if(hand) {
-            stand.addEquipmentLock(EquipmentSlot.HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
-            stand.addEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.ADDING);
-            stand.getEquipment().setItemInMainHand(item);
+        // Offset axe according to player's hand
+        int yOffset;
+        if (event.getHand() == EquipmentSlot.HAND) {
+            yOffset = 1; //perpendicular to the right
+        } else {
+            yOffset = -1; //perpendicular to the left
         }
-        else {
-            stand.addEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
-            stand.addEquipmentLock(EquipmentSlot.HAND, ArmorStand.LockType.ADDING);
-            stand.getEquipment().setItemInOffHand(item);
-        }
+
+        Vector handOffset = direction.clone()
+            .crossProduct(new Vector(0, yOffset, 0)) // move perpendicular
+            .multiply(0.5);
+
+        // Offset axe a bit backwards
+        Vector backwardOffset = direction.clone()
+            .multiply(-0.75);
+
+        // Add a downward offset to move the axe lower
+        Vector downwardOffset = new Vector(0, -0.2, 0);
+
+        Location axeLocation = location.clone().add(handOffset).add(backwardOffset).add(downwardOffset);
+
+        ItemDisplay axeDisplay = world.spawn(axeLocation, ItemDisplay.class);
+        axeDisplay.setItemStack(item);
+        axeDisplay.setViewRange((float)maxDistance);
+
+        // Rotate vertically (to face forward pointing frontwards)
+        Transformation currentTransformation = axeDisplay.getTransformation();
+        currentTransformation.getLeftRotation().rotateLocalY((float) Math.toRadians(-90));
+        axeDisplay.setTransformation(currentTransformation);
 
         // Check if SpaceBreadSplash is applied
         String enchant = item.getItemMeta().getPersistentDataContainer().get(Utility.enchant, PersistentDataType.STRING);
@@ -153,43 +169,53 @@ public class Comet extends Item implements Interactable {
         if (player.getGameMode()!=GameMode.CREATIVE)
             Utility.addDurability(item, -1, player);
 
+        final double maxIteration = distance / (double) speed;
         new Task(HoloItems.getInstance(), 1, 1){
             double increment = 0;
-            final boolean crit = player.getLocation().getY()<height;
+            boolean crit = player.getLocation().getY()<height;
+            Quaternionf rotationPerTick = new Quaternionf().rotateZ((float) Math.toRadians(-60));
 
             public void run(){
-                if(increment>=0.3*iterations) {
-                    stand.remove();
-                    if(!targets.isEmpty()) {
-                        // Restore half durability
-                        if (player.getGameMode()!=GameMode.CREATIVE)
-                            Utility.addDurability(item, 0.5, player);
+                try {
+                    if(increment >= maxIteration) {
+                        if(!targets.isEmpty()) {
+                            // Restore half durability
+                            if (player.getGameMode()!=GameMode.CREATIVE)
+                                Utility.addDurability(item, 0.5, player);
 
-                        // Prepare a clone for Utility.damage()
-                        ItemStack clone = item.clone();
-                        if(bread) {
-                            clone.addUnsafeEnchantment(Enchantment.SMITE, 5);
-                            clone.addUnsafeEnchantment(Enchantment.BANE_OF_ARTHROPODS, 5);
-                            clone.addUnsafeEnchantment(Enchantment.SHARPNESS, 5);
+                            // Prepare for Utility.damage()
+                            ItemStack itemForDamage = item;
+                            if(bread) {
+                                itemForDamage = item.clone();
+                                itemForDamage.addUnsafeEnchantment(Enchantment.SMITE, 5);
+                                itemForDamage.addUnsafeEnchantment(Enchantment.BANE_OF_ARTHROPODS, 5);
+                                itemForDamage.addUnsafeEnchantment(Enchantment.SHARPNESS, 5);
+                            }
+                            for (LivingEntity target : targets) {
+                                if (target.isValid() && (!(target instanceof Player) || !((Player) target).isBlocking()))
+                                    Utility.damage(itemForDamage, damage, crit, player, target, false, true, false);
+                            }
                         }
-                        for (LivingEntity target : targets) {
-                            if (target.isValid() && (!(target instanceof Player) || !((Player) target).isBlocking()))
-                                Utility.damage(clone, damage, crit, player, target, false, true, false);
-                        }
+                        axeDisplay.remove();
+                        cancel();
+                        return;
                     }
+
+                    Location currentLocation = axeDisplay.getLocation();
+                    currentLocation.add(dir);
+                    axeDisplay.teleport(currentLocation);
+
+                    Transformation currentTransformation = axeDisplay.getTransformation();
+                    currentTransformation.getLeftRotation().mul(rotationPerTick);
+                    axeDisplay.setTransformation(currentTransformation);
+
+                    ++increment;
+                } catch (Exception e) {
+                    // Avoid being in loop logging errors in case of exception
+                    HoloItems.getInstance().getLogger().warning("Error in Comet ability: " + e.getMessage());
+                    axeDisplay.remove();
                     cancel();
-                    return;
                 }
-
-                double angle = increment*Math.PI;
-                if(hand)
-                    stand.setRightArmPose(stand.getRightArmPose().setX(angle));
-                else
-                    stand.setLeftArmPose(stand.getLeftArmPose().setX(angle));
-                increment += 0.3;
-
-                stand.teleport(stand.getLocation().clone().
-                        add(dir.getX(), -0.3*Math.sin(angle)+dir.getY(), dir.getZ()));
             }
         };
     }
