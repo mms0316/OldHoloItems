@@ -116,7 +116,8 @@ public class Comet extends Item implements Interactable {
             RayTraceResult result = world.rayTrace(location, dir, maxDistance,
                     FluidCollisionMode.NEVER, true, 0.5,
                     entity -> (entity != player &&
-                            entity instanceof LivingEntity && !(entity instanceof ArmorStand)));
+                            entity instanceof LivingEntity && !(entity instanceof ArmorStand) &&
+                            !targets.contains(entity))); // Skip previously raytraced entities
             if (result != null) {
                 LivingEntity entity = (LivingEntity) result.getHitEntity();
                 if (entity != null) {
