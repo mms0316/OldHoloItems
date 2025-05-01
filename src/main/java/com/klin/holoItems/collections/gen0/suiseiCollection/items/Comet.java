@@ -154,6 +154,7 @@ public class Comet extends Item implements Interactable {
 
         ItemDisplay axeDisplay = world.spawn(axeLocation, ItemDisplay.class);
         axeDisplay.setInvisible(true); // Remove mark in minimaps
+        axeDisplay.setPersistent(false); // Remove if chunk unloads
         axeDisplay.setItemStack(item);
         axeDisplay.setViewRange((float)maxDistance);
 
