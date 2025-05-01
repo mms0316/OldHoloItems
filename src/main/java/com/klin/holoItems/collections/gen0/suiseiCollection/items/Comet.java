@@ -153,6 +153,7 @@ public class Comet extends Item implements Interactable {
         Location axeLocation = location.clone().add(handOffset).add(backwardOffset).add(downwardOffset);
 
         ItemDisplay axeDisplay = world.spawn(axeLocation, ItemDisplay.class);
+        axeDisplay.setInvisible(true); // Remove mark in minimaps
         axeDisplay.setItemStack(item);
         axeDisplay.setViewRange((float)maxDistance);
 
