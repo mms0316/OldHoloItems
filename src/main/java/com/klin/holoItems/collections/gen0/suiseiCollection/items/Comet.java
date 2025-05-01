@@ -141,11 +141,11 @@ public class Comet extends Item implements Interactable {
 
         Vector handOffset = direction.clone()
             .crossProduct(new Vector(0, yOffset, 0)) // move perpendicular
-            .multiply(0.5);
+            .multiply(0.15);
 
-        // Offset axe a bit backwards
+        // Offset axe backwards
         Vector backwardOffset = direction.clone()
-            .multiply(-0.75);
+            .multiply(-1);
 
         // Add a downward offset to move the axe lower
         Vector downwardOffset = new Vector(0, -0.2, 0);
@@ -156,9 +156,10 @@ public class Comet extends Item implements Interactable {
         axeDisplay.setItemStack(item);
         axeDisplay.setViewRange((float)maxDistance);
 
-        // Rotate vertically (to face forward pointing frontwards)
         Transformation currentTransformation = axeDisplay.getTransformation();
-        currentTransformation.getLeftRotation().rotateLocalY((float) Math.toRadians(-90));
+        currentTransformation.getLeftRotation()
+            .rotateLocalY((float) Math.toRadians(-90)) // Rotate vertically (to face forward pointing frontwards)
+            .rotateLocalZ((float) Math.toRadians(-15)); // Slant inwards
         axeDisplay.setTransformation(currentTransformation);
 
         // Check if SpaceBreadSplash is applied
@@ -202,10 +203,12 @@ public class Comet extends Item implements Interactable {
                         return;
                     }
 
+                    // Move forward
                     Location currentLocation = axeDisplay.getLocation();
                     currentLocation.add(dir);
                     axeDisplay.teleport(currentLocation);
 
+                    // Spin
                     Transformation currentTransformation = axeDisplay.getTransformation();
                     currentTransformation.getLeftRotation().mul(rotationPerTick);
                     axeDisplay.setTransformation(currentTransformation);
