@@ -132,37 +132,27 @@ public class Comet extends Item implements Interactable {
         }
 
         // Offset axe according to player's hand
-        int yOffset;
+        int rotation;
         if (event.getHand() == EquipmentSlot.HAND) {
-            yOffset = 1; //perpendicular to the right
+            rotation = -1;
         } else {
-            yOffset = -1; //perpendicular to the left
+            rotation = 1;
         }
 
-        Vector handOffset = direction.clone()
-            .crossProduct(new Vector(0, yOffset, 0)) // move perpendicular
-            .multiply(0.15);
+        ItemDisplay axeDisplay = world.spawn(location, ItemDisplay.class, entity -> {
+            // This block runs before entity is ticked, meaning it won't show a mark in minimap right as the axe is spawned
+            entity.setInvisible(true); // Remove mark in minimaps
+        entity.setPersistent(false); // Remove if chunk unloads
+        entity.setItemStack(item);
+        entity.setViewRange((float)maxDistance);
 
-        // Offset axe backwards
-        Vector backwardOffset = direction.clone()
-            .multiply(-1);
-
-        // Add a downward offset to move the axe lower
-        Vector downwardOffset = new Vector(0, -0.2, 0);
-
-        Location axeLocation = location.clone().add(handOffset).add(backwardOffset).add(downwardOffset);
-
-        ItemDisplay axeDisplay = world.spawn(axeLocation, ItemDisplay.class);
-        axeDisplay.setInvisible(true); // Remove mark in minimaps
-        axeDisplay.setPersistent(false); // Remove if chunk unloads
-        axeDisplay.setItemStack(item);
-        axeDisplay.setViewRange((float)maxDistance);
-
-        Transformation currentTransformation = axeDisplay.getTransformation();
+        Transformation currentTransformation = entity.getTransformation();
         currentTransformation.getLeftRotation()
             .rotateLocalY((float) Math.toRadians(-90)) // Rotate vertically (to face forward pointing frontwards)
-            .rotateLocalZ((float) Math.toRadians(-15)); // Slant inwards
-        axeDisplay.setTransformation(currentTransformation);
+            .rotateLocalZ((float) Math.toRadians(15 * rotation)); // Slant inwards
+        currentTransformation.getTranslation().add(0.4f * rotation, -0.25f, 0.5f); // Move closer to hand
+            entity.setTransformation(currentTransformation);
+});
 
         // Check if SpaceBreadSplash is applied
         String enchant = item.getItemMeta().getPersistentDataContainer().get(Utility.enchant, PersistentDataType.STRING);
