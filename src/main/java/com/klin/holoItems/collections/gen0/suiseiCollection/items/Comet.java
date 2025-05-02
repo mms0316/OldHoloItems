@@ -105,15 +105,11 @@ public class Comet extends Item implements Interactable {
         // Normalized vector
         Vector direction = location.getDirection();
 
-        // Set vector speed as 3 blocks/sec
-        final double speed = 3;
-        Vector dir = direction.multiply(speed);
-
         Set<LivingEntity> targets = new HashSet<>();
 
         // Raytrace to find entities in the way. If piercing is applied, do it multiple times
         for(int i=0; i<1+item.getEnchantmentLevel(Enchantment.PIERCING); i++) {
-            RayTraceResult result = world.rayTrace(location, dir, maxDistance,
+            RayTraceResult result = world.rayTrace(location, direction, maxDistance,
                     FluidCollisionMode.NEVER, true, 0.5,
                     entity -> (entity != player &&
                             entity instanceof LivingEntity && !(entity instanceof ArmorStand) &&
@@ -142,17 +138,17 @@ public class Comet extends Item implements Interactable {
         ItemDisplay axeDisplay = world.spawn(location, ItemDisplay.class, entity -> {
             // This block runs before entity is ticked, meaning it won't show a mark in minimap right as the axe is spawned
             entity.setInvisible(true); // Remove mark in minimaps
-        entity.setPersistent(false); // Remove if chunk unloads
-        entity.setItemStack(item);
-        entity.setViewRange((float)maxDistance);
+            entity.setPersistent(false); // Remove if chunk unloads
+            entity.setItemStack(item);
+            entity.setViewRange((float)maxDistance);
 
-        Transformation currentTransformation = entity.getTransformation();
-        currentTransformation.getLeftRotation()
-            .rotateLocalY((float) Math.toRadians(-90)) // Rotate vertically (to face forward pointing frontwards)
-            .rotateLocalZ((float) Math.toRadians(15 * rotation)); // Slant inwards
-        currentTransformation.getTranslation().add(0.4f * rotation, -0.25f, 0.5f); // Move closer to hand
+            Transformation currentTransformation = entity.getTransformation();
+            currentTransformation.getLeftRotation()
+                .rotateLocalY((float) Math.toRadians(-90)) // Rotate vertically (to face forward pointing frontwards)
+                .rotateLocalZ((float) Math.toRadians(15 * rotation)); // Slant inwards
+            currentTransformation.getTranslation().add(0.4f * rotation, -0.25f, 0.5f); // Move closer to hand
             entity.setTransformation(currentTransformation);
-});
+        });
 
         // Check if SpaceBreadSplash is applied
         String enchant = item.getItemMeta().getPersistentDataContainer().get(Utility.enchant, PersistentDataType.STRING);
@@ -163,7 +159,10 @@ public class Comet extends Item implements Interactable {
         if (player.getGameMode()!=GameMode.CREATIVE)
             Utility.addDurability(item, -1, player);
 
+        // Set vector speed as 3 blocks/tick
+        final double speed = 3;
         final double maxIteration = distance / (double) speed;
+
         new Task(HoloItems.getInstance(), 1, 1){
             double increment = 0;
             boolean crit = player.getLocation().getY()<height;
@@ -195,16 +194,16 @@ public class Comet extends Item implements Interactable {
                         return;
                     }
 
-                    // Move forward
-                    Location currentLocation = axeDisplay.getLocation();
-                    currentLocation.add(dir);
-                    axeDisplay.teleport(currentLocation);
 
-                    // Spin
-                    Transformation currentTransformation = axeDisplay.getTransformation();
-                    currentTransformation.getLeftRotation().mul(rotationPerTick);
-                    axeDisplay.setTransformation(currentTransformation);
-
+                    if (increment != 0) {
+                        Transformation currentTransformation = axeDisplay.getTransformation();
+                        currentTransformation.getLeftRotation().mul(rotationPerTick); // Spin
+                        currentTransformation.getTranslation().add(0, 0, (float)speed); // Move forward
+                        axeDisplay.setTransformation(currentTransformation);
+                        axeDisplay.setInterpolationDelay(0);
+                        axeDisplay.setInterpolationDuration(1);
+                    }
+        
                     ++increment;
                 } catch (Exception e) {
                     // Avoid being in loop logging errors in case of exception
