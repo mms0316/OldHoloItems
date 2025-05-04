@@ -54,7 +54,7 @@ public abstract class BatteryPack extends Pack {
         }
         count *= perCharge;
         int excess = count-cap;
-        excess = (int) (excess/perCharge);
+        excess = (int) (excess / perCharge + (excess % perCharge > 0 ? 1 : 0));
 
         int stackSize = content.getMaxStackSize();
         while (excess > 0) {
