@@ -55,15 +55,15 @@ public abstract class BatteryPack extends Pack {
         count *= perCharge;
         int excess = count-cap;
         excess = (int) (excess/perCharge);
-        if(excess>0) {
-            int stackSize = content.getMaxStackSize();
-            if(stackSize==64)
+
+        int stackSize = content.getMaxStackSize();
+        while (excess > 0) {
+            if (excess > stackSize) {
+                world.dropItemNaturally(loc, new ItemStack(content, stackSize));
+                excess -= stackSize;
+            } else {
                 world.dropItemNaturally(loc, new ItemStack(content, excess));
-            else{
-                while(excess>0){
-                    world.dropItemNaturally(loc, new ItemStack(content, Math.min(stackSize, excess)));
-                    excess -= stackSize;
-                }
+                excess = 0;
             }
         }
 
@@ -78,18 +78,20 @@ public abstract class BatteryPack extends Pack {
     protected void repack(ItemStack item, Inventory inv) {
         Integer amount = item.getItemMeta().
                 getPersistentDataContainer().get(Utility.pack, PersistentDataType.INTEGER);
-        if (amount != null) {
+        if (amount != null && amount > 0) {
             Material content = this.content;
             if (content == null)
                 content = item.getType();
             int stackSize = content.getMaxStackSize();
             amount = (int) (amount / perCharge);
-            if(stackSize==64)
-                inv.addItem(new ItemStack(content, amount));
-            else{
-                while(amount>0){
-                    inv.addItem(new ItemStack(content, Math.min(stackSize, amount)));
+
+            while (amount > 0) {
+                if (amount > stackSize) {
+                    inv.addItem(new ItemStack(content, stackSize));
                     amount -= stackSize;
+                } else {
+                    inv.addItem(new ItemStack(content, amount));
+                    amount = 0;
                 }
             }
         }
