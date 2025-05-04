@@ -91,4 +91,15 @@ public class GemKnife extends BatteryPack {
 
         block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(material, amount));
     }
+
+    @Override
+    protected boolean isFuelAccepted(ItemStack fuel, Material content) {
+        // Stop a different gem knife being consumed as fuel
+        // (Also stops items with any metadata)
+        if (fuel.hasItemMeta()) {
+            return false;
+        }
+
+        return super.isFuelAccepted(fuel, content);
+    }
 }
