@@ -36,6 +36,10 @@ public abstract class BatteryPack extends Pack {
         this.cap = cap;
     }
 
+    protected boolean isFuelAccepted(ItemStack fuel, Material content) {
+        return fuel.getType() == content;
+    }
+
     public int ability(Inventory inv, ItemStack item, Player player){
         int count = 0;
         Location loc = player.getLocation();
@@ -46,7 +50,7 @@ public abstract class BatteryPack extends Pack {
         for(ItemStack fuel : inv.getContents()) {
             if(fuel==null || fuel.getType()==Material.AIR)
                 continue;
-            if(fuel.getType()!=content) {
+            if (!isFuelAccepted(fuel, content)) {
                 world.dropItemNaturally(loc, fuel);
                 continue;
             }
