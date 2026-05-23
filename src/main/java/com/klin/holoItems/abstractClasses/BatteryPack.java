@@ -36,6 +36,10 @@ public abstract class BatteryPack extends Pack {
         this.cap = cap;
     }
 
+    protected boolean isFuelAccepted(ItemStack fuel, Material content) {
+        return fuel.getType() == content;
+    }
+
     public int ability(Inventory inv, ItemStack item, Player player){
         int count = 0;
         Location loc = player.getLocation();
@@ -46,7 +50,7 @@ public abstract class BatteryPack extends Pack {
         for(ItemStack fuel : inv.getContents()) {
             if(fuel==null || fuel.getType()==Material.AIR)
                 continue;
-            if(fuel.getType()!=content) {
+            if (!isFuelAccepted(fuel, content)) {
                 world.dropItemNaturally(loc, fuel);
                 continue;
             }
@@ -54,16 +58,16 @@ public abstract class BatteryPack extends Pack {
         }
         count *= perCharge;
         int excess = count-cap;
-        excess = (int) (excess/perCharge);
-        if(excess>0) {
-            int stackSize = content.getMaxStackSize();
-            if(stackSize==64)
+        excess = (int) (excess / perCharge + (excess % perCharge > 0 ? 1 : 0));
+
+        int stackSize = content.getMaxStackSize();
+        while (excess > 0) {
+            if (excess > stackSize) {
+                world.dropItemNaturally(loc, new ItemStack(content, stackSize));
+                excess -= stackSize;
+            } else {
                 world.dropItemNaturally(loc, new ItemStack(content, excess));
-            else{
-                while(excess>0){
-                    world.dropItemNaturally(loc, new ItemStack(content, Math.min(stackSize, excess)));
-                    excess -= stackSize;
-                }
+                excess = 0;
             }
         }
 
@@ -78,18 +82,20 @@ public abstract class BatteryPack extends Pack {
     protected void repack(ItemStack item, Inventory inv) {
         Integer amount = item.getItemMeta().
                 getPersistentDataContainer().get(Utility.pack, PersistentDataType.INTEGER);
-        if (amount != null) {
+        if (amount != null && amount > 0) {
             Material content = this.content;
             if (content == null)
                 content = item.getType();
             int stackSize = content.getMaxStackSize();
             amount = (int) (amount / perCharge);
-            if(stackSize==64)
-                inv.addItem(new ItemStack(content, amount));
-            else{
-                while(amount>0){
-                    inv.addItem(new ItemStack(content, Math.min(stackSize, amount)));
+
+            while (amount > 0) {
+                if (amount > stackSize) {
+                    inv.addItem(new ItemStack(content, stackSize));
                     amount -= stackSize;
+                } else {
+                    inv.addItem(new ItemStack(content, amount));
+                    amount = 0;
                 }
             }
         }
