@@ -49,7 +49,7 @@ public class PiratesHook extends Item implements Fishable {
                 new ShapedRecipe(new NamespacedKey(HoloItems.getInstance(), name+"0"), item);
         recipe0.shape("  a"," ab","a c");
         recipe0.setIngredient('a', Material.STICK);
-        recipe0.setIngredient('b', Material.CHAIN);
+        recipe0.setIngredient('b', Material.IRON_CHAIN);
         recipe0.setIngredient('c', Material.TRIPWIRE_HOOK);
         recipe0.setGroup(name);
         Bukkit.getServer().addRecipe(recipe0);
@@ -58,7 +58,7 @@ public class PiratesHook extends Item implements Fishable {
                 new ShapedRecipe(new NamespacedKey(HoloItems.getInstance(), name+"1"), item);
         recipe1.shape("a  ","ba ","c a");
         recipe1.setIngredient('a', Material.STICK);
-        recipe1.setIngredient('b', Material.CHAIN);
+        recipe1.setIngredient('b', Material.IRON_CHAIN);
         recipe1.setIngredient('c', Material.TRIPWIRE_HOOK);
         recipe1.setGroup(name);
         Bukkit.getServer().addRecipe(recipe1);

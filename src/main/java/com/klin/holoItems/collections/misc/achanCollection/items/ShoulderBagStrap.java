@@ -26,7 +26,7 @@ import com.klin.holoItems.interfaces.Placeable;
 public class ShoulderBagStrap extends Item implements Placeable, Holdable, Closeable, Clickable {
     public static final String name = "shoulderBagStrap";
 
-    private static final Material material = Material.CHAIN;
+    private static final Material material = Material.IRON_CHAIN;
     private static final int quantity = 1;
     private static final String lore = "Easy carry shulkers";
     private static final int durability = 0;

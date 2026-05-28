@@ -41,7 +41,7 @@ public class ZiplineOld extends Item implements Interactable {
     Set<BlockFace> vertical = Stream.of(BlockFace.UP, BlockFace.DOWN).
             collect(Collectors.toCollection(HashSet::new));
     Set<Material> fences = Stream.of(
-            Material.ACACIA_FENCE, Material.BIRCH_FENCE, Material.OAK_FENCE, Material.DARK_OAK_FENCE, Material.CRIMSON_FENCE, Material.JUNGLE_FENCE, Material.NETHER_BRICK_FENCE, Material.SPRUCE_FENCE, Material.WARPED_FENCE, Material.CHAIN, Material.IRON_BARS).
+            Material.ACACIA_FENCE, Material.BIRCH_FENCE, Material.OAK_FENCE, Material.DARK_OAK_FENCE, Material.CRIMSON_FENCE, Material.JUNGLE_FENCE, Material.NETHER_BRICK_FENCE, Material.SPRUCE_FENCE, Material.WARPED_FENCE, Material.IRON_CHAIN, Material.IRON_BARS).
             collect(Collectors.toCollection(HashSet::new));
 
     private static final Material material = Material.STRING;
