@@ -6,6 +6,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import com.klin.holoItems.utility.Utility;
+
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.Component;
 
@@ -44,6 +46,8 @@ public class EnchantInventoryHolder implements InventoryHolder {
 
         ItemStack placeholderItemStack = new ItemStack(PLACEHOLDER_MATERIAL);
         placeholderItemStack.editMeta(meta -> meta.customName(Component.empty()));
+        Utility.setUnstackableUtilityKey(placeholderItemStack);
+
         for (int i = 0; i < 27; i++) {
             if (isSlotPlaceholder(i)) {
                 inventory.setItem(i, placeholderItemStack);
@@ -52,7 +56,14 @@ public class EnchantInventoryHolder implements InventoryHolder {
 
         ItemStack actionItemStack = new ItemStack(ACTION_MATERIAL);
         actionItemStack.editMeta(meta -> meta.customName(ACTION_NONE_COMPONENT));
+        Utility.setUnstackableUtilityKey(actionItemStack);
         inventory.setItem(SLOT_ACTION, actionItemStack);
+
+        // Note: the use of Utility.setUnstackableUtilityKey prevents the following:
+        // 1) Get an experience bottle
+        // 2) Use anvil and rename it "Add base item and HoloItem enchantment"
+        // 3) Inside this inventory, double-click the experience bottle
+        // Without this, the player would fetch the experience bottle
     }
 
     @Override
@@ -84,7 +95,7 @@ public class EnchantInventoryHolder implements InventoryHolder {
 
     public void setActionSlot(boolean isReady, boolean hasLevels, int cost) {
         ItemStack actionItemStack = inventory.getItem(SLOT_ACTION);
-        if (actionItemStack == null) return;
+        if (actionItemStack == null) return; //Shouldn't ever happen
 
         Component actionComponent;
 
