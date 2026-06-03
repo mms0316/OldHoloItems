@@ -22,6 +22,7 @@ import com.klin.holoItems.abstractClasses.Enchant;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 
 public class EnchantInventoryImpl implements Listener {
     // Each player has their own inventory
@@ -144,7 +145,7 @@ public class EnchantInventoryImpl implements Listener {
 
         // Check if player has enough levels
         if (player.getLevel() < enchant.expCost) {
-            player.sendMessage(Component.text("You need at least " + enchant.expCost + " levels!").color(NamedTextColor.RED));
+            player.sendMessage(Component.text("You need at least " + enchant.expCost + " levels!", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
             return;
         }
 

@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import com.klin.holoItems.utility.Utility;
 
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.Component;
 
 /*
@@ -27,7 +28,7 @@ public class EnchantInventoryHolder implements InventoryHolder {
 
     private static final Material ACTION_MATERIAL = Material.EXPERIENCE_BOTTLE;
 
-    private static final Component ACTION_NONE_COMPONENT = Component.text("Add base item and HoloItem enchantment");
+    private static final Component ACTION_NONE_COMPONENT = Component.text("Add base item and HoloItem enchantment").decoration(TextDecoration.ITALIC, false);
     private static final String ACTION_HAS_LEVELS_FMT = "Enchant for %d levels";
     private static final String ACTION_NEEDS_LEVELS_FMT = "Needs %d levels";
 
@@ -103,7 +104,7 @@ public class EnchantInventoryHolder implements InventoryHolder {
             actionComponent = ACTION_NONE_COMPONENT;
         } else {
             final String actionText = String.format(hasLevels ? ACTION_HAS_LEVELS_FMT : ACTION_NEEDS_LEVELS_FMT, cost);
-            actionComponent = Component.text(actionText, hasLevels ? NamedTextColor.GREEN : NamedTextColor.RED);
+            actionComponent = Component.text(actionText, hasLevels ? NamedTextColor.GREEN : NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
         }
 
         actionItemStack.editMeta(meta -> meta.displayName(actionComponent));

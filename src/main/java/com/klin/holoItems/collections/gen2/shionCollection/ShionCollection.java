@@ -5,6 +5,7 @@ import com.klin.holoItems.HoloItems;
 import com.klin.holoItems.collections.gen2.shionCollection.items.*;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 
 import org.bukkit.Material;
 import org.bukkit.Statistic;
@@ -78,6 +79,6 @@ public class ShionCollection extends Collection {
     }
 
     public void inquire(Player player, ItemStack itemStack, PlayerInteractEntityEvent event) {
-        HoloItems.getInstance().getEnchantImpl().openGUI(player, Component.text("HoloItem Enchant"));
+        HoloItems.getInstance().getEnchantImpl().openGUI(player, Component.text("HoloItem Enchant").decoration(TextDecoration.ITALIC, false));
     }
 }
