@@ -290,7 +290,7 @@ public class Utility {
     }
 
     public static ItemStack addEnchant(ItemStack itemStack, Enchant enchant){
-        //TODO: Move to Enchant.java
+        //TODO: Remove uses
         Set<Enchantment> exclusive = enchant.exclusive;
         if(exclusive!=null) {
             for (Enchantment enchantment : itemStack.getEnchantments().keySet()) {
