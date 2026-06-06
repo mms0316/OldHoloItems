@@ -18,6 +18,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -72,7 +73,7 @@ public abstract class Enchant extends Item {
         Item holoItem = Utility.findItem(itemStack, Item.class);
 
         // Disallow enchanting twice
-        List<String> existingEnchants = getEnchantments(itemStack);
+        List<String> existingEnchants = getHoloEnchantmentIds(itemStack);
         if (existingEnchants.contains(name)) {
             return false;
         }
@@ -100,7 +101,7 @@ public abstract class Enchant extends Item {
     /*
      * Returns a mutable List with the HoloItem Enchantments names of an Item Stack
      */
-    public static List<String> getEnchantments(ItemStack itemStack) {
+    public static List<String> getHoloEnchantmentIds(ItemStack itemStack) {
         if (itemStack == null) return new ArrayList<>();
 
         final var itemMeta = itemStack.getItemMeta();
@@ -112,15 +113,36 @@ public abstract class Enchant extends Item {
         return new ArrayList<>(Arrays.asList(serializedEnchantments.split(" ")));
     }
 
-    public static void setEnchantments(ItemStack itemStack, List<String> enchantmentNames) {
+    public static void setHoloEnchantmentIds(ItemStack itemStack, List<String> enchantmentIds) {
         if (itemStack == null) return;
 
         final var itemMeta = itemStack.getItemMeta();
         if (itemMeta == null) return;
 
-        String serializedEnchantments = String.join(" ", enchantmentNames);
+        String serializedEnchantments = String.join(" ", enchantmentIds);
         itemMeta.getPersistentDataContainer().set(Utility.enchant, PersistentDataType.STRING, serializedEnchantments);
         itemStack.setItemMeta(itemMeta);
+    }
+
+    public static Set<Enchant> getHoloEnchantments(ItemStack itemStack) {
+        Set<Enchant> enchantments = new HashSet<>();
+
+        if (itemStack == null) return enchantments;
+
+        final var itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) return enchantments;
+
+        String serializedEnchantments = itemMeta.getPersistentDataContainer().get(Utility.enchant, PersistentDataType.STRING);
+        if (serializedEnchantments == null) return enchantments;
+
+        for (String enchantmentId : serializedEnchantments.split(" ")) {
+            Enchant reactantEnchant = Utility.findItem(enchantmentId, Enchant.class);
+            if (reactantEnchant != null) {
+                enchantments.add(reactantEnchant);
+            }
+        }
+
+        return enchantments;
     }
 
     /*
@@ -142,9 +164,9 @@ public abstract class Enchant extends Item {
         }
 
         // Register this enchantment as a HoloItem enchantment in the item's PersistentDataContainer
-        List<String> enchantments = getEnchantments(result);
+        List<String> enchantments = getHoloEnchantmentIds(result);
         enchantments.add(name);
-        Enchant.setEnchantments(result, enchantments);
+        Enchant.setHoloEnchantmentIds(result, enchantments);
 
         // Cosmetic changes
         result.editMeta(meta -> {

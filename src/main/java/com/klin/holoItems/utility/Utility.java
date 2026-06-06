@@ -298,9 +298,9 @@ public class Utility {
                     itemStack.removeEnchantment(enchantment);
             }
         }
-        List<String> enchantments = Enchant.getEnchantments(itemStack);
+        List<String> enchantments = Enchant.getHoloEnchantmentIds(itemStack);
         enchantments.add(enchant.name);
-        Enchant.setEnchantments(itemStack, enchantments);
+        Enchant.setHoloEnchantmentIds(itemStack, enchantments);
 
         ItemMeta meta = itemStack.getItemMeta();
         List<String> lore = meta.getLore();
