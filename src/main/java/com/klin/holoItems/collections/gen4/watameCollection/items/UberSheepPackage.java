@@ -46,7 +46,7 @@ public class UberSheepPackage extends Crate implements Collectable {
         recipe.shape("aaa","bcb","aaa");
         recipe.setIngredient('a', new RecipeChoice.MaterialChoice(Material.ACACIA_SLAB, Material.BIRCH_SLAB,
                 Material.DARK_OAK_SLAB, Material.JUNGLE_SLAB, Material.OAK_SLAB, Material.SPRUCE_SLAB, Material.CRIMSON_SLAB, Material.WARPED_SLAB));
-        recipe.setIngredient('b', Material.CHAIN);
+        recipe.setIngredient('b', Material.IRON_CHAIN);
         recipe.setIngredient('c', Material.BARREL);
         recipe.setGroup(name);
         Bukkit.getServer().addRecipe(recipe);

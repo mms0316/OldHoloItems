@@ -5,7 +5,6 @@ import com.klin.holoItems.interfaces.Interactable;
 import com.klin.holoItems.interfaces.Launchable;
 import com.klin.holoItems.HoloItems;
 import com.klin.holoItems.Item;
-import com.klin.holoItems.collections.gen0.suiseiCollection.SuiseiCollection;
 import com.klin.holoItems.utility.Utility;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -54,14 +53,14 @@ public class Hoshiyumi extends Item implements Interactable, Launchable, Hitable
         ShapedRecipe bowRight = new ShapedRecipe(new NamespacedKey(HoloItems.getInstance(), name+"Right"), item);
         bowRight.shape("%* ","% *","%* ");
         bowRight.setIngredient('*', Material.NETHER_STAR);
-        bowRight.setIngredient('%', Material.CHAIN);
+        bowRight.setIngredient('%', Material.IRON_CHAIN);
         bowRight.setGroup(name);
         Bukkit.getServer().addRecipe(bowRight);
 
         ShapedRecipe bowLeft = new ShapedRecipe(new NamespacedKey(HoloItems.getInstance(), name+"Left"), item);
         bowLeft.shape(" *%","* %"," *%");
         bowLeft.setIngredient('*', Material.NETHER_STAR);
-        bowLeft.setIngredient('%', Material.CHAIN);
+        bowLeft.setIngredient('%', Material.IRON_CHAIN);
         bowLeft.setGroup(name);
         Bukkit.getServer().addRecipe(bowLeft);
     }

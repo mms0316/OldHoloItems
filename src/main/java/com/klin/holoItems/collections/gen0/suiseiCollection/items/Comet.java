@@ -62,7 +62,7 @@ public class Comet extends Item implements Interactable {
                 new ShapedRecipe(new NamespacedKey(HoloItems.getInstance(), name+"0"), item);
         recipe0.shape("**","*%"," %");
         recipe0.setIngredient('*', Material.NETHER_STAR);
-        recipe0.setIngredient('%', Material.CHAIN);
+        recipe0.setIngredient('%', Material.IRON_CHAIN);
         recipe0.setGroup(name);
         Bukkit.getServer().addRecipe(recipe0);
 
@@ -70,7 +70,7 @@ public class Comet extends Item implements Interactable {
                 new ShapedRecipe(new NamespacedKey(HoloItems.getInstance(), name+"1"), item);
         recipe1.shape("**","%*","% ");
         recipe1.setIngredient('*', Material.NETHER_STAR);
-        recipe1.setIngredient('%', Material.CHAIN);
+        recipe1.setIngredient('%', Material.IRON_CHAIN);
         recipe1.setGroup(name);
         Bukkit.getServer().addRecipe(recipe1);
     }

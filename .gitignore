@@ -220,3 +220,7 @@ LICENSE
 
 # Rust
 **/Cargo.lock
+
+.gradle/
+run/
+build/

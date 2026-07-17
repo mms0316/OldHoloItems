@@ -3,12 +3,10 @@ package com.klin.holoItems.collections.gen4.kanataCollection.items;
 import com.klin.holoItems.abstractClasses.SlidingPack;
 import com.klin.holoItems.interfaces.Launchable;
 import com.klin.holoItems.HoloItems;
-import com.klin.holoItems.collections.gen4.kanataCollection.KanataCollection;
 import com.klin.holoItems.utility.Utility;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -42,7 +40,7 @@ public class Shuribow extends SlidingPack implements Launchable {
         bowRight.shape("%& ","% *","%& ");
         bowRight.setIngredient('*', Material.CONDUIT);
         bowRight.setIngredient('&', Material.SPONGE);
-        bowRight.setIngredient('%', Material.CHAIN);
+        bowRight.setIngredient('%', Material.IRON_CHAIN);
         bowRight.setGroup(name);
         Bukkit.getServer().addRecipe(bowRight);
 
@@ -50,7 +48,7 @@ public class Shuribow extends SlidingPack implements Launchable {
         bowLeft.shape(" &%","* %"," &%");
         bowLeft.setIngredient('*', Material.CONDUIT);
         bowLeft.setIngredient('&', Material.SPONGE);
-        bowLeft.setIngredient('%', Material.CHAIN);
+        bowLeft.setIngredient('%', Material.IRON_CHAIN);
         bowLeft.setGroup(name);
         Bukkit.getServer().addRecipe(bowLeft);
     }
