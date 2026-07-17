@@ -1,7 +1,6 @@
 plugins {
     java
     id("xyz.jpenilla.run-paper") version "3.0.2"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21" //Access to Minecraft NMS + Paper API packages
 }
 
 group = "com.klin"
@@ -21,7 +20,7 @@ java {
 }
 
 dependencies {
-    paperweight.paperDevBundle("26.1.2.build.+")
+    compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
 }
 
 tasks {
