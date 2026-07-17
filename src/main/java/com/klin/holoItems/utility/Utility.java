@@ -49,7 +49,11 @@ public class Utility {
     //Gradually, the usage of 'key' namespace will be reviewed, possibly being limited to very specific usages
     public static final NamespacedKey id = new NamespacedKey(HoloItems.getInstance(), "id");
 
+    // Do not use this. Currently it uses Math.random() do try to have uniqueness, but it is less reliable than UUID
     public static final NamespacedKey stack = new NamespacedKey(HoloItems.getInstance(), "stack");
+    // Use this instead of Utility.stack. It uses UUID to have better chance of not repeating
+    public static final NamespacedKey unstackable = new NamespacedKey(HoloItems.getInstance(), "unstackable");
+
     public static final NamespacedKey cooldown = new NamespacedKey(HoloItems.getInstance(), "cooldown");
     public static final NamespacedKey enchant = new NamespacedKey(HoloItems.getInstance(), "enchant");
     public static final NamespacedKey pack = new NamespacedKey(HoloItems.getInstance(), "pack");
@@ -838,6 +842,16 @@ public class Utility {
             return false; //this is needed because getItemMeta() on Air throws exception
 
         return (itemStack.getItemMeta().getPersistentDataContainer().get(Utility.key, PersistentDataType.STRING) != null);
+    }
+
+    public static void setUnstackableUtilityKey(ItemStack itemStack) {
+        if (itemStack == null) return;
+
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta == null) return;
+
+        meta.getPersistentDataContainer().set(Utility.key, PersistentDataType.STRING, UUID.randomUUID().toString());
+        itemStack.setItemMeta(meta);
     }
 }
 
