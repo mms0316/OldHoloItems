@@ -1157,9 +1157,12 @@ public class Events implements Listener {
         if(holder!=null) {
             Player player = (Player) event.getPlayer();
             if(holder.equals(player) && bedrock.contains(player)){
-                PrepareAnvilEvent anvilEvent = new PrepareAnvilEvent(view, null);
-                Bukkit.getServer().getPluginManager().callEvent(anvilEvent);
-                if(anvilEvent.getResult()==null)
+                //~26.1: No longer possible to create a custom PrepareAnvilEvent - commented for now
+                //This is not an issue, because this event is related to clicking on a Shion NPC, and main server doesn't have one atm
+
+                //PrepareAnvilEvent anvilEvent = new PrepareAnvilEvent(view, null);
+                //Bukkit.getServer().getPluginManager().callEvent(anvilEvent);
+                //if(anvilEvent.getResult()==null)
                     player.sendMessage("§a[§5Shion§a]§f: That.. doesn't work");
                 bedrock.remove(player);
                 return;
