@@ -23,7 +23,7 @@ import com.klin.holoItems.abstractClasses.Enchant;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-public class EnchantImpl implements Listener {
+public class EnchantInventoryImpl implements Listener {
     // Each player has their own inventory
     private final Map<UUID, EnchantInventoryHolder> enchantInventories = new HashMap<>();
 

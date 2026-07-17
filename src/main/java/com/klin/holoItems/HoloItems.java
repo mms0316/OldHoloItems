@@ -1,7 +1,7 @@
 package com.klin.holoItems;
 
 import com.klin.holoItems.dungeons.Dungeons;
-import com.klin.holoItems.recipes.enchant.EnchantImpl;
+import com.klin.holoItems.recipes.enchant.EnchantInventoryImpl;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class HoloItems extends JavaPlugin {
     private static HoloItems instance;
 
-    private EnchantImpl enchantImpl;
+    private EnchantInventoryImpl enchantImpl;
 
     @Override
     public void onEnable(){
@@ -21,7 +21,7 @@ public class HoloItems extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Events(), this);
         getServer().getPluginManager().registerEvents(new StatManager(), this);
 
-        enchantImpl = new EnchantImpl();
+        enchantImpl = new EnchantInventoryImpl();
         getServer().getPluginManager().registerEvents(enchantImpl, this);
 
         getCommand("collections").setExecutor(collections);
@@ -64,7 +64,7 @@ public class HoloItems extends JavaPlugin {
         return instance;
     }
 
-    public EnchantImpl getEnchantImpl() {
+    public EnchantInventoryImpl getEnchantImpl() {
         return enchantImpl;
     }
 }
