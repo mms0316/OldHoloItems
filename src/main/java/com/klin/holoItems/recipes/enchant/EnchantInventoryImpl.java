@@ -68,9 +68,9 @@ public class EnchantInventoryImpl implements Listener {
                 handleActionSlot(player, enchantInvHolder);
                 return;
             }
-
-            updateActionSlotLater(event, player, enchantInvHolder);
         }
+
+        updateActionSlotLater(event, player, enchantInvHolder);
     }
 
     /*
