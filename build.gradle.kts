@@ -15,18 +15,18 @@ repositories {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
+    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
 }
 
 tasks {
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(25)
+        options.release.set(21)
     }
 
     javadoc {
@@ -40,7 +40,7 @@ tasks {
             "main" to "com.klin.holoItems.HoloItems",
             "name" to "HoloItems",
             "version" to project.version,
-            "apiVersion" to "26.1.2",
+            "apiVersion" to "1.21.11",
             "authors" to listOf("klin")
         )
 
@@ -53,6 +53,6 @@ tasks {
         // Configure the Minecraft version for our task.
         // This is the only required configuration besides applying the plugin.
         // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("26.1.2")
+        minecraftVersion("1.21.11")
     }
 }
