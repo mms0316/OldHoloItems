@@ -195,15 +195,62 @@ public class Events implements Listener {
     }
 
     @EventHandler
-    public void combineItems(PrepareAnvilEvent event){
-        Inventory inv = event.getView().getTopInventory();
+    public void combineItems(PrepareAnvilEvent event) {
+        final Inventory inv = event.getView().getTopInventory();
 
-        ItemStack item2 = inv.getItem(1);
+        final ItemStack reactant = inv.getItem(0);
+        final ItemStack reagent = inv.getItem(1);
 
-        // It's no longer allowed to use anvil to do enchanting
-        if (Enchant.isHoloItemEnchant(item2)) {
+        // It's no longer allowed to use anvil to combine with a HoloItem enchantment
+        if (Enchant.isHoloItemEnchant(reagent)) {
             event.setResult(null);
             return;
+        }
+
+        // From here on, removes incompatible enchantments
+        ItemStack result = event.getResult();
+        if (result != null && reactant != null && reagent != null) {
+
+            // Holo enchantments to add
+            // It's no longer allowed to add a HoloItem enchantment through anvil
+            Set<Enchant> holoItemEnchantmentsToAdd = Enchant.getHoloEnchantments(reagent);
+            if (!holoItemEnchantmentsToAdd.isEmpty()) {
+                event.setResult(null);
+                return;
+            }
+
+            // Vanilla enchantments to add
+            Map<Enchantment, Integer> enchantmentsToAdd;
+            if (reagent.getItemMeta() instanceof EnchantmentStorageMeta storageMeta) {
+                enchantmentsToAdd = storageMeta.getStoredEnchants();
+            } else {
+                enchantmentsToAdd = reagent.getEnchantments();
+            }
+
+            // Current Holo enchantments
+            Set<Enchant> currentHoloEnchantments = Enchant.getHoloEnchantments(reactant);
+
+            // Check current Holo enchantments x vanilla enchantments
+            for (Enchant enchant : currentHoloEnchantments) {
+                if (enchant.exclusive != null) {
+                    for (Enchantment enchantment : enchantmentsToAdd.keySet()) {
+                        if (enchant.exclusive.contains(enchantment)) {
+                            result.removeEnchantment(enchantment); //Holo enchantment has priority
+                        }
+                    }
+                }
+            }
+
+
+            // If current item is a HoloItem, check for accepted enchantments
+            Item reactantHoloItem = Utility.findItem(reactant, Item.class);
+            if (reactantHoloItem != null && reactantHoloItem.accepted != null) {
+                for (Enchantment enchantment : enchantmentsToAdd.keySet()) {
+                    if (!reactantHoloItem.accepted.contains(enchantment)) {
+                        result.removeEnchantment(enchantment);
+                    }
+                }
+            }
         }
     }
 
@@ -670,7 +717,7 @@ public class Events implements Listener {
             if(item.getType()==Material.AIR || item.getItemMeta()==null)
                 continue;
             String id = item.getItemMeta().getPersistentDataContainer().get(Utility.key, PersistentDataType.STRING);
-            List<String> enchants = Enchant.getEnchantments(item);
+            List<String> enchants = Enchant.getHoloEnchantmentIds(item);
             if(id!=null || !enchants.isEmpty()) {
                 if(i==0 && id!=null)
                     Utility.addDurability(item, -1, event.getPlayer());
