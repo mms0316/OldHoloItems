@@ -1,14 +1,16 @@
 package com.klin.holoItems;
 
 import com.klin.holoItems.dungeons.Dungeons;
-import com.klin.holoItems.dungeons.inaDungeon.InaDungeon;
+import com.klin.holoItems.recipes.enchant.EnchantImpl;
+
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class HoloItems extends JavaPlugin {
     private static HoloItems instance;
+
+    private EnchantImpl enchantImpl;
 
     @Override
     public void onEnable(){
@@ -18,6 +20,9 @@ public class HoloItems extends JavaPlugin {
         getServer().getPluginManager().registerEvents(collections, this);
         getServer().getPluginManager().registerEvents(new Events(), this);
         getServer().getPluginManager().registerEvents(new StatManager(), this);
+
+        enchantImpl = new EnchantImpl();
+        getServer().getPluginManager().registerEvents(enchantImpl, this);
 
         getCommand("collections").setExecutor(collections);
         getCommand("coordinates").setExecutor(collections);
@@ -57,5 +62,9 @@ public class HoloItems extends JavaPlugin {
 
     public static HoloItems getInstance() {
         return instance;
+    }
+
+    public EnchantImpl getEnchantImpl() {
+        return enchantImpl;
     }
 }

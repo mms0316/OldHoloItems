@@ -1,10 +1,11 @@
 package com.klin.holoItems.collections.gen2.shionCollection;
 
 import com.klin.holoItems.Collection;
-import com.klin.holoItems.Events;
 import com.klin.holoItems.HoloItems;
 import com.klin.holoItems.collections.gen2.shionCollection.items.*;
-import com.klin.holoItems.utility.Task;
+
+import net.kyori.adventure.text.Component;
+
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
@@ -14,6 +15,30 @@ import org.bukkit.inventory.ItemStack;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/*
+ * Shion Collection, themed around enchanting and potion brewing.
+ *
+ * To create Shion as an entity, it's possible to:
+ * - /summon minecraft:mannequin ~ ~ ~ {profile:murasakishion, CustomName:"Shion", hide_description:1b, Invulnerable:1b, immovable:1b}
+ * - /acquire nameTag
+ * - Use an anvil and name the NameTag "Shion"
+ * - Right-click Shion entity while holding the NameTag
+ * 
+ * Note: Creative players can damage and move mannequins even though they have invulnerability and immovability tags
+ * A plugin like Citizens may be required to make the entity completely invulnerable and immovable
+ * 
+ * Note: It's possible to handle immovability by Creative players with:
+ * - /team add NoCollision
+ * - /team modify NoCollision collisionRule never
+ * - /team join NoCollision Shion
+ * 
+ * For testing with Bedrock + Paper + Geyser, besides having a Bedrock account, do:
+ * - Install Geyser (https://geysermc.org/download/)
+ * - Also install Floodgate (https://geysermc.org/wiki/floodgate/setup/) because otherwise you may need to reauthenticate with every login
+ * - Run server once and stop so plugins/Geyser-Spigot/config.yml is created
+ * - Edit java.auth-type to "floodgate"
+ * - If using BlueStacks to run Bedrock, the server IP for reaching localhost is 10.0.2.2
+ */
 public class ShionCollection extends Collection {
     public static final String name = "Shion";
     public static final String desc = "NEEEEEEEEEEEEEEEEEEEEEEE";
@@ -53,35 +78,6 @@ public class ShionCollection extends Collection {
     }
 
     public void inquire(Player player, ItemStack itemStack, PlayerInteractEntityEvent event) {
-        if(!Events.bedrock.add(player))
-            return;
-        player.sendMessage("§a[§5Shion§a]§7: §oYou need me to enchant your items for you?");
-        player.sendMessage("§a[§5Shion§a]§7: Guess I have no choice");
-        new Task(HoloItems.getInstance(), 40, 20) {
-            int increment = 0;
-            public void run() {
-                if(!Events.bedrock.contains(player)){
-                    cancel();
-                    return;
-                } switch(increment) {
-                    case 0:
-                        player.sendMessage("§a[§5Shion§a]§7: Place the two items in your main and offhand");
-                        break;
-                    case 1:
-                        player.sendMessage("§a[§5Shion§a]§7: Close your inventory when ready");
-                        break;
-                    case 30:
-                        player.sendMessage("§a[§5Shion§a]§7: I'm waiting");
-                        break;
-                    case 60:
-                        player.sendMessage("§a[§5Shion§a]§f: Maybe next time");
-                        Events.bedrock.remove(player);
-                        cancel();
-                        return;
-                    default:
-                }
-                increment++;
-            }
-        };
+        HoloItems.getInstance().getEnchantImpl().openGUI(player, Component.text("HoloItem Enchant"));
     }
 }

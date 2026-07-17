@@ -286,6 +286,7 @@ public class Utility {
     }
 
     public static ItemStack addEnchant(ItemStack itemStack, Enchant enchant){
+        //TODO: Move to Enchant.java
         Set<Enchantment> exclusive = enchant.exclusive;
         if(exclusive!=null) {
             for (Enchantment enchantment : itemStack.getEnchantments().keySet()) {
@@ -293,13 +294,11 @@ public class Utility {
                     itemStack.removeEnchantment(enchantment);
             }
         }
+        List<String> enchantments = Enchant.getEnchantments(itemStack);
+        enchantments.add(enchant.name);
+        Enchant.setEnchantments(itemStack, enchantments);
+
         ItemMeta meta = itemStack.getItemMeta();
-        String enchantments = meta.getPersistentDataContainer().get(Utility.enchant, PersistentDataType.STRING);
-        if(enchantments==null)
-            enchantments = "";
-        else
-            enchantments += " ";
-        meta.getPersistentDataContainer().set(Utility.enchant, PersistentDataType.STRING, enchantments+enchant.name);
         List<String> lore = meta.getLore();
         if(lore==null) {
             if(meta.isUnbreakable())

@@ -81,33 +81,7 @@ public class Events implements Listener {
             InventoryType.SMOKER,
             InventoryType.STONECUTTER
     );
-    private final Map<Integer, Enchantment[]> multiplier = new HashMap<>() {{
-        put(1, new Enchantment[]{
-                Enchantment.PROTECTION, Enchantment.SHARPNESS,
-                Enchantment.EFFICIENCY, Enchantment.POWER,
-                Enchantment.LOYALTY, Enchantment.PIERCING
-        });
-        put(2, new Enchantment[]{
-                Enchantment.FIRE_PROTECTION, Enchantment.FEATHER_FALLING,
-                Enchantment.PROJECTILE_PROTECTION, Enchantment.SMITE,
-                Enchantment.BANE_OF_ARTHROPODS, Enchantment.KNOCKBACK,
-                Enchantment.UNBREAKING, Enchantment.QUICK_CHARGE
-        });
-        put(4, new Enchantment[]{
-                Enchantment.BLAST_PROTECTION, Enchantment.RESPIRATION,
-                Enchantment.DEPTH_STRIDER, Enchantment.AQUA_AFFINITY,
-                Enchantment.FIRE_ASPECT, Enchantment.LOOTING,
-                Enchantment.FORTUNE, Enchantment.PUNCH,
-                Enchantment.FLAME, Enchantment.LUCK_OF_THE_SEA, Enchantment.LURE,
-                Enchantment.FROST_WALKER, Enchantment.MENDING, Enchantment.IMPALING,
-                Enchantment.RIPTIDE, Enchantment.MULTISHOT, Enchantment.SWEEPING_EDGE
-        });
-        put(8, new Enchantment[]{
-                Enchantment.THORNS, Enchantment.SILK_TOUCH, Enchantment.INFINITY,
-                Enchantment.BINDING_CURSE, Enchantment.VANISHING_CURSE,
-                Enchantment.CHANNELING, Enchantment.SOUL_SPEED
-        });
-    }};
+
     private final Set<Set<Enchantment>> with = Set.of(
             Set.of(Enchantment.SHARPNESS, Enchantment.SMITE, Enchantment.BANE_OF_ARTHROPODS),
             Set.of(Enchantment.FIRE_PROTECTION, Enchantment.PROJECTILE_PROTECTION, Enchantment.PROTECTION, Enchantment.FEATHER_FALLING, Enchantment.BLAST_PROTECTION),
@@ -126,7 +100,6 @@ public class Events implements Listener {
         }
     }};
     public static Set<Activatable> activatables = new HashSet<>();
-    public static Set<Player> bedrock = new HashSet<>();
 
     @EventHandler(ignoreCancelled = true)
     public void clickItem(InventoryClickEvent event){
@@ -221,213 +194,17 @@ public class Events implements Listener {
             event.setCancelled(true);
     }
 
-    private void combine(InventoryHolder holder, ItemStack result, int cost){
-        Player player = (Player) holder;
-        int level = player.getLevel();
-        if(level<cost)
-            player.sendMessage("§a[§5Shion§a]§f: Guess who's covering the "+cost+" level exp cost");
-        else {
-            player.setLevel(level - cost);
-            PlayerInventory inv = player.getInventory();
-            inv.setItemInMainHand(result);
-            inv.setItemInOffHand(null);
-            player.sendMessage("§a[§5Shion§a]§f: You're welcome");
-        }
-    }
-
-    private static int getRepairCost(final ItemStack itemStack) {
-        return itemStack.getItemMeta() instanceof Repairable repairable ? repairable.getRepairCost() : 0;
-    }
-
     @EventHandler
     public void combineItems(PrepareAnvilEvent event){
         Inventory inv = event.getView().getTopInventory();
-        boolean anvil = inv instanceof AnvilInventory;
-        ItemStack reactant;
-        ItemStack reagent;
-        if(anvil){
-            reactant = inv.getItem(0);
-            reagent = inv.getItem(1);
-        } else{
-            InventoryHolder holder = inv.getHolder();
-            if(holder instanceof Player)
-                inv = ((Player) inv.getHolder()).getInventory();
-            else
-                return;
-            reactant = ((PlayerInventory) inv).getItemInMainHand();
-            reagent = ((PlayerInventory) inv).getItemInOffHand();
-        } if(reactant==null || reagent==null)
-            return;
-        Item item = Utility.findItem(reactant, Item.class);
-        Item enchantItem = Utility.findItem(reagent, Item.class);
-        if(item==null && enchantItem==null)
-            return;
-        else if(enchantItem instanceof Enchant && !enchantItem.equals(item)) {
-            Enchant enchant = (Enchant) enchantItem;
-            String enchants = reactant.getItemMeta().getPersistentDataContainer().get(Utility.enchant, PersistentDataType.STRING);
-            if (enchants != null && enchants.contains(enchant.name)) {
-                event.setResult(null);
-                return;
-            }
-            if ((enchant.acceptedIds == null || item == null || !enchant.acceptedIds.contains(item.name)) &&
-                    (enchant.acceptedTypes == null || !(item==null && enchant.acceptedTypes.contains(reactant.getType())))) {
-                event.setResult(null);
-                return;
-            }
-            ItemStack result = Utility.addEnchant(reactant.clone(), enchant);
-            int cost = Math.min(39, enchant.expCost + getRepairCost(reactant));
-            ItemMeta meta = result.getItemMeta();
-            if(anvil) {
-                String renameText = ((AnvilInventory) inv).getRenameText();
-                String originalText = meta.hasDisplayName() ? meta.getDisplayName().substring(2) : "";
-                if (renameText != null && !renameText.trim().isEmpty() && !renameText.equals(originalText)) {
-                    meta.setDisplayName("§6" + renameText);
-                    result.setItemMeta(meta);
-                    cost++;
-                }
-                ((AnvilInventory) inv).setRepairCost(cost);
-                if (enchant.exclusive != null) {
-                    for (Enchantment enchantment : result.getEnchantments().keySet()) {
-                        if (enchant.exclusive.contains(enchantment))
-                            result.removeEnchantment(enchantment);
-                    }
-                }
-            }
-            if (item == null) {
-                if (meta instanceof Damageable) {
-                    meta.setUnbreakable(true);
-                    meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-                    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-                }
-                List<String> addDurability = meta.getLore();
-                if (addDurability == null)
-                    addDurability = new ArrayList<>();
-                if (!addDurability.get(addDurability.size() - 1).startsWith("§fDurability: ")) {
-                    int maxDurability = reactant.getType().getMaxDurability();
-                    int currDurability = maxDurability - ((Damageable) meta).getDamage();
-                    addDurability.add("");
-                    addDurability.add("§fDurability: " + currDurability + "/" + maxDurability);
-                    meta.setLore(addDurability);
-                }
-                result.setItemMeta(meta);
-            } if (!result.equals(event.getResult())) {
-                event.setResult(result);
-                if(!anvil)
-                    combine(inv.getHolder(), result, cost);
-            }
-            return;
-        } else if(enchantItem==null){
-            if(reagent.getType()==Material.ENCHANTED_BOOK && reagent.getItemMeta() instanceof EnchantmentStorageMeta){
-                Map<Enchantment, Integer> enchantments = ((EnchantmentStorageMeta) reagent.getItemMeta()).getStoredEnchants();
-                ItemStack result = reactant.clone();
-                int levelCost = 0;
-                if(item.accepted != null) {
-                    String enchants = reactant.getItemMeta().getPersistentDataContainer().get(Utility.enchant, PersistentDataType.STRING);
-                    Set<Enchantment> excluded = new HashSet<>();
-                    if(enchants!=null){
-                        for(String id : enchants.split(" ")){
-                            Enchant reactantEnchant = Utility.findItem(id, Enchant.class);
-                            if(reactantEnchant!=null && reactantEnchant.exclusive!=null)
-                                excluded.addAll(reactantEnchant.exclusive);
-                        }
-                    }
-                    for (Enchantment enchantment : enchantments.keySet()) {
-                        if (item.accepted.contains(enchantment)) {
-                            if(excluded.contains(enchantment))
-                                continue;
-                            Set<Enchantment> incompatible = exclusive.get(enchantment);
-                            if(incompatible!=null) {
-                                for (Enchantment resultEnchantment : result.getEnchantments().keySet()) {
-                                    if (incompatible.contains(resultEnchantment))
-                                        result.removeEnchantment(resultEnchantment);
-                                }
-                            }
-                            int resultLevel = result.getItemMeta().getEnchantLevel(enchantment);
-                            int enchantmentLevel = enchantments.get(enchantment);
-                            if (resultLevel == enchantmentLevel && enchantmentLevel < enchantment.getMaxLevel())
-                                enchantmentLevel++;
-                            else if (resultLevel > enchantmentLevel)
-                                enchantmentLevel = 0;
-                            result.addUnsafeEnchantment(enchantment, Math.max(resultLevel, enchantmentLevel));
-                            levelCost += enchantmentLevel * ((findMultiplier(enchantment) + 1) / 2);
-                        }
-                    }
-                } if(levelCost>0) {
-                    ItemMeta meta = result.getItemMeta();
-                    if(anvil) {
-                        String renameText = ((AnvilInventory) inv).getRenameText();
-                        String originalText = meta.getDisplayName().substring(2);
-                        if (renameText != null && !renameText.trim().isEmpty() && !renameText.equals(originalText)) {
-                            meta.setDisplayName("§6" + renameText);
-                            levelCost++;
-                        }
-                    }
-                    List<String> lore = meta.getLore();
-                    if (lore != null && !lore.isEmpty() && lore.get(0).startsWith("§b")) {
-                        lore.add(0, "");
-                        meta.setLore(lore);
-                    }
-                    result.setItemMeta(meta);
-                    if (!result.equals(event.getResult())) {
-                        event.setResult(result);
-                        int cost = levelCost + Math.max(getRepairCost(reactant), getRepairCost(reagent));
-                        if(anvil)
-                            ((AnvilInventory) inv).setRepairCost(cost);
-                        else
-                            combine(inv.getHolder(), result, cost);
-                    }
-                } else event.setResult(null);
-            } else event.setResult(null);
-            return;
-        } if(event.getResult()!=null || !enchantItem.equals(item))
-            return;
-        if(item.durability==0){
+
+        ItemStack item2 = inv.getItem(1);
+
+        // It's no longer allowed to use anvil to do enchanting
+        if (Enchant.isHoloItemEnchant(item2)) {
             event.setResult(null);
             return;
         }
-
-        int levelCost = 0;
-        ItemStack result = reactant.clone();
-        int[] durabilityA = Utility.getDurability(reactant.getItemMeta().getLore());
-        if(durabilityA[0]!=durabilityA[1] && reagent.getItemMeta().getLore()!=null) {
-            int[] durabilityB = Utility.getDurability(reagent.getItemMeta().getLore());
-            Utility.addDurability(result, durabilityB[0] + (int) (0.12 * durabilityB[1]), null);
-            levelCost += 2;
-        }
-        Map<Enchantment, Integer> enchantments = new HashMap<>(reagent.getEnchantments());
-        for(Enchantment enchantment : enchantments.keySet()) {
-            if (item.accepted.contains(enchantment)){
-                Set<Enchantment> incompatible = exclusive.get(enchantment);
-                for (Enchantment resultEnchantment : result.getEnchantments().keySet()) {
-                    if (incompatible.contains(resultEnchantment))
-                        result.removeEnchantment(resultEnchantment);
-                }
-                int resultLevel = result.getItemMeta().getEnchantLevel(enchantment);
-                int enchantmentLevel = enchantments.get(enchantment);
-                if(resultLevel==enchantmentLevel && enchantmentLevel<enchantment.getMaxLevel())
-                    enchantmentLevel++;
-                else if(resultLevel>enchantmentLevel)
-                    enchantmentLevel = 0;
-                result.addUnsafeEnchantment(enchantment, Math.max(resultLevel, enchantmentLevel));
-                levelCost += enchantmentLevel*(findMultiplier(enchantment)+1)/2;
-            }
-        }
-        ItemMeta meta = result.getItemMeta();
-        if(anvil) {
-            String renameText = ((AnvilInventory) inv).getRenameText();
-            String originalText = meta.getDisplayName().substring(2);
-            if (renameText != null && !renameText.trim().isEmpty() && !renameText.equals(originalText)) {
-                meta.setDisplayName("§6" + renameText);
-                levelCost++;
-            }
-        }
-        result.setItemMeta(meta);
-        event.setResult(result);
-        int cost = levelCost+ Math.max(getRepairCost(reactant), getRepairCost(reagent));
-        if(anvil)
-            ((AnvilInventory) inv).setRepairCost(cost);
-        else
-            combine(inv.getHolder(), result, cost);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -893,8 +670,8 @@ public class Events implements Listener {
             if(item.getType()==Material.AIR || item.getItemMeta()==null)
                 continue;
             String id = item.getItemMeta().getPersistentDataContainer().get(Utility.key, PersistentDataType.STRING);
-            String enchant = item.getItemMeta().getPersistentDataContainer().get(Utility.enchant, PersistentDataType.STRING);
-            if(id!=null || enchant!=null) {
+            List<String> enchants = Enchant.getEnchantments(item);
+            if(id!=null || !enchants.isEmpty()) {
                 if(i==0 && id!=null)
                     Utility.addDurability(item, -1, event.getPlayer());
                 //temp
@@ -924,9 +701,7 @@ public class Events implements Listener {
             if(extractable !=null && i!=0 == extractable instanceof Holdable)
                 extractable.ability(event);
             if(i==0) {
-                if(enchant==null)
-                    continue;
-                for (String enchantment : enchant.split(" ")) {
+                for (String enchantment : enchants) {
                     Extractable enchanted = Utility.findItem(enchantment, Extractable.class);
                     if (enchanted!=null)
                         enchanted.ability(event);
@@ -1156,17 +931,7 @@ public class Events implements Listener {
         InventoryHolder holder = inv.getHolder();
         if(holder!=null) {
             Player player = (Player) event.getPlayer();
-            if(holder.equals(player) && bedrock.contains(player)){
-                //~26.1: No longer possible to create a custom PrepareAnvilEvent - commented for now
-                //This is not an issue, because this event is related to clicking on a Shion NPC, and main server doesn't have one atm
 
-                //PrepareAnvilEvent anvilEvent = new PrepareAnvilEvent(view, null);
-                //Bukkit.getServer().getPluginManager().callEvent(anvilEvent);
-                //if(anvilEvent.getResult()==null)
-                    player.sendMessage("§a[§5Shion§a]§f: That.. doesn't work");
-                bedrock.remove(player);
-                return;
-            }
             Closeable closeable = Utility.findItem(player.getInventory().getItemInOffHand(), Closeable.class, player);
             if(closeable instanceof Holdable)
                 closeable.ability(event);
@@ -1364,16 +1129,6 @@ public class Events implements Listener {
         Writable writable = Utility.findItem(id, Writable.class, player);
         if(writable!=null)
             writable.ability(event, meta);
-    }
-
-    private int findMultiplier(Enchantment enchant){
-        for(Integer i : multiplier.keySet()){
-            for(Enchantment enchantment : multiplier.get(i)){
-                if(enchantment.equals(enchant))
-                    return i;
-            }
-        }
-        return -1;
     }
 
     @EventHandler
