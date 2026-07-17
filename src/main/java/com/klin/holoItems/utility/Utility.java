@@ -850,7 +850,7 @@ public class Utility {
         ItemMeta meta = itemStack.getItemMeta();
         if (meta == null) return;
 
-        meta.getPersistentDataContainer().set(Utility.key, PersistentDataType.STRING, UUID.randomUUID().toString());
+        meta.getPersistentDataContainer().set(Utility.unstackable, PersistentDataType.STRING, UUID.randomUUID().toString());
         itemStack.setItemMeta(meta);
     }
 }
