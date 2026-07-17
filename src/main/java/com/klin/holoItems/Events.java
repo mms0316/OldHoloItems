@@ -23,12 +23,15 @@ import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentOffer;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.*;
@@ -327,6 +330,46 @@ public class Events implements Listener {
             }
         } if(item instanceof Craftable)
             ((Craftable) item).ability(event);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void prepareEnchantOffers(PrepareItemEnchantEvent event) {
+        EnchantmentOffer[] offers = event.getOffers();
+        if (offers == null || offers.length == 0)
+            return; //nothing to do
+
+        // Check if this event is working on a HoloItem
+        ItemStack itemStack = event.getItem();
+        Item holoItem = Utility.findItem(itemStack, Item.class);
+        if (holoItem == null)
+            return;
+
+        // Check if HoloItem accepts vanilla enchantments
+        Set<Enchantment> acceptedEnchants = holoItem.accepted;
+        if (acceptedEnchants == null) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // Convert Set<> to [], needed for random access
+        Enchantment[] acceptedEnchantsArray = acceptedEnchants.toArray(new Enchantment[acceptedEnchants.size()]);
+
+        // Switch incompatible offers with random accepted enchantments
+        for (int i = 0; i < offers.length; i++) {
+            EnchantmentOffer offer = offers[i];
+            if (offer == null)
+                continue;
+
+            Enchantment enchantment = offer.getEnchantment();
+            if (!acceptedEnchants.contains(enchantment)) {
+                // Switch enchantment to a random accepted enchantment
+                int randomIndex = (int) (Math.random() * acceptedEnchants.size());
+                offer.setEnchantment(acceptedEnchantsArray[randomIndex]);
+
+                // Normalize enchant level not to exceed maximum
+                offer.setEnchantmentLevel(Math.min(offer.getEnchantmentLevel(), offer.getEnchantment().getMaxLevel()));
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
